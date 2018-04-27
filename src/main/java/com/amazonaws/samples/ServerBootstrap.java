@@ -29,53 +29,47 @@ public class ServerBootstrap {
 
 	public static final String SAMPLE_APPLICATION_STREAM_NAME = "<STREAM NAME HERE>"; //change this
 
-    private static final String SAMPLE_APPLICATION_NAME = "<NAME OF APP HERE>";  //change this
+	private static final String SAMPLE_APPLICATION_NAME = "<NAME OF APP HERE>"; //change this
 
-    private static int SOCKET_PORT = 8099; //this much match the client
+	private static int SOCKET_PORT = 8099; //this much match the client
 
 	public static void main(String[] args) {
-		KclSocketsServer server = new KclSocketsServer(SAMPLE_APPLICATION_NAME,
-				SAMPLE_APPLICATION_STREAM_NAME,
-				InitialPositionInStream.TRIM_HORIZON,
-				SOCKET_PORT
-				);
+		KclSocketServer server = new KclSocketServer(SAMPLE_APPLICATION_NAME, SAMPLE_APPLICATION_STREAM_NAME,
+				InitialPositionInStream.TRIM_HORIZON, SOCKET_PORT);
 
 		if (args.length == 1 && "delete-resources".equals(args[0])) {
-            deleteResources();
-            return;
-        }
+			deleteResources();
+			return;
+		}
 		server.Run();
 	}
 
 	public static void deleteResources() {
 
 		ProfileCredentialsProvider credentialsProvider = Utils.GetCredentialProvider();
-        // Delete the stream
-        AmazonKinesis kinesis = AmazonKinesisClientBuilder.standard()
-            .withCredentials(credentialsProvider)
-            .withRegion("us-east-1")
-            .build();
+		// Delete the stream
+		AmazonKinesis kinesis = AmazonKinesisClientBuilder.standard().withCredentials(credentialsProvider)
+				.withRegion("us-east-1").build();
 
-        System.out.printf("Deleting the Amazon Kinesis stream used by the sample. Stream Name = %s.\n",
-                SAMPLE_APPLICATION_STREAM_NAME);
-        try {
-            kinesis.deleteStream(SAMPLE_APPLICATION_STREAM_NAME);
-        } catch (ResourceNotFoundException ex) {
-            // The stream doesn't exist.
-        }
+		System.out.printf("Deleting the Amazon Kinesis stream used by the sample. Stream Name = %s.\n",
+				SAMPLE_APPLICATION_STREAM_NAME);
+		try {
+			kinesis.deleteStream(SAMPLE_APPLICATION_STREAM_NAME);
+		} catch (ResourceNotFoundException ex) {
+			// The stream doesn't exist.
+		}
 
-        // Delete the table
-        AmazonDynamoDB dynamoDB = AmazonDynamoDBClientBuilder.standard()
-            .withCredentials(credentialsProvider)
-            .withRegion("us-east-1")
-            .build();
-        System.out.printf("Deleting the Amazon DynamoDB table used by the Amazon Kinesis Client Library. Table Name = %s.\n",
-                SAMPLE_APPLICATION_NAME);
-        try {
-            dynamoDB.deleteTable(SAMPLE_APPLICATION_NAME);
-        } catch (com.amazonaws.services.dynamodbv2.model.ResourceNotFoundException ex) {
-            // The table doesn't exist.
-        }
-    }
+		// Delete the table
+		AmazonDynamoDB dynamoDB = AmazonDynamoDBClientBuilder.standard().withCredentials(credentialsProvider)
+				.withRegion("us-east-1").build();
+		System.out.printf(
+				"Deleting the Amazon DynamoDB table used by the Amazon Kinesis Client Library. Table Name = %s.\n",
+				SAMPLE_APPLICATION_NAME);
+		try {
+			dynamoDB.deleteTable(SAMPLE_APPLICATION_NAME);
+		} catch (com.amazonaws.services.dynamodbv2.model.ResourceNotFoundException ex) {
+			// The table doesn't exist.
+		}
+	}
 
 }
